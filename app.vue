@@ -64,7 +64,7 @@ const {data, pending} = await useAsyncData('mountains', () =>
 
 		<div v-if="!pending && Array.isArray(data) && data.length" id="videos">
 			<a
-				v-for="video in data"
+				v-for="(video, index) of data"
 				:key="video.id"
 				:href="video.domain + video.pathWatch + video.slug"
 				:title="video.creatorName + ': ' + video.name"
@@ -77,7 +77,7 @@ const {data, pending} = await useAsyncData('mountains', () =>
 						height="180"
 						width="320"
 						aria-hidden="true"
-						loading="lazy"
+						:loading="index > 3 ? 'lazy' : 'eager'"
 					/>
 					<figcaption>
 						<h2 :id="`video-${video.id}-title`" class="title">{{ video.name }}</h2>
