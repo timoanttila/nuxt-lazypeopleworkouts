@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
+
 const title = 'Lazy People Workouts'
 const description =
 	'Training and getting fit is hard and never seems like the right time to start. No worries. Quick and easy training videos help you get started.'
@@ -10,6 +12,9 @@ const themeColor = '#422e43'
 
 useHead({
 	title,
+	htmlAttrs: {
+		lang: 'en'
+	},
 	meta: [
 		{charset: 'utf-8'},
 		{name: 'viewport', content: 'width=device-width, initial-scale=1'},
@@ -77,7 +82,7 @@ const {data} = await useAsyncData('mountains', () =>
 				<figcaption>
 					<h2 :id="`video-${video.id}-title`" class="title">{{ video.name }}</h2>
 					<h3 :id="`video-${video.id}-info`" class="info">
-						{{ video.creatorName }} | {{ video.created }}
+						{{ video.creatorName }} | {{ dayjs(video.created).format('DD.MM.YYYY') }}
 					</h3>
 				</figcaption>
 			</figure>
