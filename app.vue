@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import dayjs from 'dayjs'
 
 const title = 'Lazy People Workouts'
@@ -46,9 +46,17 @@ useHead({
 	]
 })
 
-const {data, pending} = await useAsyncData('mountains', () =>
-	$fetch('https://api.timoanttila.com/workouts.php')
+const pageNumber = useState('page', () => 1)
+const limit = 15
+
+const {data, pending, refresh} = await useAsyncData('videos', () =>
+	$fetch(`https://api.timoanttila.com/workouts.php?limit=${limit}&page=${pageNumber.value}`)
 )
+
+const loadMore = value => {
+	useState('page', () => value)
+	refresh()
+}
 </script>
 
 <template>
@@ -59,12 +67,60 @@ const {data, pending} = await useAsyncData('mountains', () =>
 				Training and getting fit is hard and never seems like the right time to start. No worries.
 				Quick and easy training videos help you get started.
 			</p>
-			<p id="videoCount">54 videos from 22 creators.</p>
+
+			<template v-if="data && data.total">
+				<div id="videoCount">{{ data.total }} videos from {{ data.creators }} creators.</div>
+				<div id="pageCount" aria-live="polite">Page {{ data.page }} / {{ data.pages }}</div>
+
+				<div id="pageButtons">
+					<button @click="() => loadMore(pageNumber--)" :disabled="pageNumber <= 1">
+						<svg
+							clip-rule="evenodd"
+							fill-rule="evenodd"
+							stroke-linejoin="round"
+							stroke-miterlimit="2"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+							title="Previous page"
+							aria-label="Videos on the previous page"
+							aria-controls="videos pageCount"
+						>
+							<path
+								d="m13.789 7.155c.141-.108.3-.157.456-.157.389 0 .755.306.755.749v8.501c0 .445-.367.75-.755.75-.157 0-.316-.05-.457-.159-1.554-1.203-4.199-3.252-5.498-4.258-.184-.142-.29-.36-.29-.592 0-.23.107-.449.291-.591 1.299-1.002 3.945-3.044 5.498-4.243z"
+							/>
+						</svg>
+					</button>
+					<button
+						@click="() => loadMore(pageNumber++)"
+						:disabled="pageNumber >= data.pages"
+						title="Previous page"
+						aria-label="Videos on the next page"
+						aria-controls="videos pageCount"
+					>
+						<svg
+							clip-rule="evenodd"
+							fill-rule="evenodd"
+							stroke-linejoin="round"
+							stroke-miterlimit="2"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="m10.211 7.155c-.141-.108-.3-.157-.456-.157-.389 0-.755.306-.755.749v8.501c0 .445.367.75.755.75.157 0 .316-.05.457-.159 1.554-1.203 4.199-3.252 5.498-4.258.184-.142.29-.36.29-.592 0-.23-.107-.449-.291-.591-1.299-1.002-3.945-3.044-5.498-4.243z"
+							/>
+						</svg>
+					</button>
+				</div>
+			</template>
 		</header>
 
-		<div v-if="!pending && Array.isArray(data) && data.length" id="videos">
+		<div
+			v-if="!pending && Array.isArray(data.videos) && data.videos.length"
+			id="videos"
+			aria-live="polite"
+		>
 			<a
-				v-for="(video, index) of data"
+				v-for="(video, index) of data.videos"
 				:key="video.id"
 				:href="video.domain + video.pathWatch + video.slug"
 				:title="video.creatorName + ': ' + video.name"

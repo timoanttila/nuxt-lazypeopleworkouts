@@ -1,6 +1,6 @@
 {
   "name": "lazypeopleworkouts",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "A collection of easy workout videos for lazy people. Frontend is powered with Nuxt.",
   "homepage": "https://lazypeopleworkouts.com",
   "bugs": "https://github.com/timoanttila/nuxt-lazypeopleworkouts/issues",
