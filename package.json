@@ -1,0 +1,31 @@
+{
+  "name": "lazypeopleworkouts",
+  "version": "1.0.0",
+  "description": "A collection of easy workout videos for lazy people. Frontend is powered with Nuxt.",
+  "homepage": "https://lazypeopleworkouts.com",
+  "bugs": "https://github.com/timoanttila/nuxt-lazypeopleworkouts/issues",
+  "keywords": [
+    "vue",
+    "vuejs",
+    "nuxt",
+    "website",
+    "pwa"
+  ],
+  "author": {
+    "name": "Timo Anttila",
+    "email": "moro@tuspe.com",
+    "url": "https://timoanttila.com"
+  },
+  "private": false,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxt/image-edge": "^1.0.0-27991759.1a5eea1",
+    "nuxt": "^3.3.2"
+  }
+}
