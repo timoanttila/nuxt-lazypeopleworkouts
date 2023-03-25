@@ -46,46 +46,47 @@ useHead({
 	]
 })
 
-const {data} = await useAsyncData('mountains', () =>
+const {data, pending} = await useAsyncData('mountains', () =>
 	$fetch('https://api.timoanttila.com/workouts.php')
 )
 </script>
 
 <template>
-	<header>
-		<h1>Lazy People Workouts</h1>
-		<p id="description">
-			Training and getting fit is hard and never seems like the right time to start. No worries.
-			Quick and easy training videos help you get started.
-		</p>
-		<p id="videoCount">54 videos from 22 creators.</p>
-	</header>
+	<div id="workoutVideos">
+		<header>
+			<h1>Lazy People Workouts</h1>
+			<p id="description">
+				Training and getting fit is hard and never seems like the right time to start. No worries.
+				Quick and easy training videos help you get started.
+			</p>
+			<p id="videoCount">54 videos from 22 creators.</p>
+		</header>
 
-	<div v-if="Array.isArray(data) && data.length" id="videos">
-		<a
-			v-for="video in data"
-			:key="video.id"
-			:href="video.domain + video.pathWatch + video.slug"
-			:title="video.creatorName + ': ' + video.name"
-			:aria-label="`External link to a video on the ${video.serviceName} channel ${video.creatorName}`"
-		>
-			<figure>
-				<nuxt-img
-					:src="`https://img.youtube.com/vi/${video.slug}/mqdefault.jpg`"
-					:alt="video.name"
-					format="webp"
-					height="180"
-					width="320"
-					aria-hidden="true"
-					loading="lazy"
-				/>
-				<figcaption>
-					<h2 :id="`video-${video.id}-title`" class="title">{{ video.name }}</h2>
-					<h3 :id="`video-${video.id}-info`" class="info">
-						{{ video.creatorName }} | {{ dayjs(video.created).format('DD.MM.YYYY') }}
-					</h3>
-				</figcaption>
-			</figure>
-		</a>
+		<div v-if="!pending && Array.isArray(data) && data.length" id="videos">
+			<a
+				v-for="video in data"
+				:key="video.id"
+				:href="video.domain + video.pathWatch + video.slug"
+				:title="video.creatorName + ': ' + video.name"
+				:aria-label="`External link to a video on the ${video.serviceName} channel ${video.creatorName}`"
+			>
+				<figure>
+					<img
+						:src="`https://img.youtube.com/vi_webp/${video.slug}/mqdefault.webp`"
+						:alt="video.name"
+						height="180"
+						width="320"
+						aria-hidden="true"
+						loading="lazy"
+					/>
+					<figcaption>
+						<h2 :id="`video-${video.id}-title`" class="title">{{ video.name }}</h2>
+						<h3 :id="`video-${video.id}-info`" class="info">
+							{{ video.creatorName }} | {{ dayjs(video.created).format('DD.MM.YYYY') }}
+						</h3>
+					</figcaption>
+				</figure>
+			</a>
+		</div>
 	</div>
 </template>

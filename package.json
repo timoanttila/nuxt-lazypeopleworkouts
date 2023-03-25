@@ -25,7 +25,6 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/image-edge": "^1.0.0-27991759.1a5eea1",
     "dayjs": "^1.11.7",
     "nuxt": "^3.3.2"
   }
