@@ -9,7 +9,7 @@ const domain = 'https://lazypeopleworkouts.com',
 	limit = 15,
 	themeColor = '#422e43',
 	title = 'Lazy People Workouts',
-	updated = '2023-03-25T12:00:00+02:00'
+	updated = '2023-05-01T10:40:00+02:00'
 
 useHead({
 	title,
