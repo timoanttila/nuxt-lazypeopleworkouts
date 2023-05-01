@@ -1,14 +1,15 @@
 <script setup>
 import dayjs from 'dayjs'
 
-const title = 'Lazy People Workouts'
-const description =
-	'Training and getting fit is hard and never seems like the right time to start. No worries. Quick and easy training videos help you get started.'
-const canonical = 'https://lazypeopleworkouts.com/'
-const image = 'https://lazypeopleworkouts.sportti.org/familyworkout.jpg'
-const created = '2022-07-20T05:16:23Z'
-const updated = '2023-03-25T12:00:00+02:00'
-const themeColor = '#422e43'
+const domain = 'https://lazypeopleworkouts.com',
+	created = '2022-07-20T05:16:23Z',
+	description =
+		'Training and getting fit is hard and never seems like the right time to start. No worries. Quick and easy training videos help you get started.',
+	image = domain + '/familyworkout.jpg',
+	limit = 15,
+	themeColor = '#422e43',
+	title = 'Lazy People Workouts',
+	updated = '2023-03-25T12:00:00+02:00'
 
 useHead({
 	title,
@@ -26,7 +27,6 @@ useHead({
 		{property: 'og:site_name', content: title},
 		{property: 'og:title', name: 'twitter:title', content: title},
 		{hid: 'home', name: 'description', property: 'og:description', content: description},
-		{property: 'canonical', content: canonical},
 		{property: 'og:image', content: image, name: 'twitter:image'},
 		{property: 'og:image:secure_url', content: image},
 		{property: 'og:image:width', content: '1200'},
@@ -41,22 +41,28 @@ useHead({
 	],
 	link: [
 		{rel: 'dns-prefetch', href: 'https://img.youtube.com'},
-		{rel: 'icon', type: 'image/x-icon', href: canonical + 'favicon.ico'},
+		{rel: 'icon', type: 'image/x-icon', href: domain + '/favicon.ico'},
 		{rel: 'me', type: 'application/atom+xml', href: 'https://api.timoanttila.com/workouts-rss.php'}
 	]
 })
 
-const pageNumber = useState('page', () => 1)
-const limit = 15
+const route = useRoute()
+const pageNumber = useState('page', () => route.query.page || 1)
 
 const {data, pending, refresh} = await useAsyncData('videos', () =>
 	$fetch(`https://api.timoanttila.com/workouts.php?limit=${limit}&page=${pageNumber.value}`)
 )
 
-const loadMore = value => {
-	useState('page', () => value)
-	refresh()
-}
+watch(
+	route,
+	to => {
+		if (to.query.page !== pageNumber.value) {
+			pageNumber.value = to.query.page || 1
+			refresh()
+		}
+	},
+	{flush: 'pre', immediate: true, deep: true}
+)
 </script>
 
 <template>
@@ -72,50 +78,12 @@ const loadMore = value => {
 				<div id="videoCount">{{ data.total }} videos from {{ data.creators }} creators.</div>
 				<div id="pageCount" aria-live="polite">Page {{ data.page }} / {{ data.pages }}</div>
 
-				<div id="pageButtons">
-					<button @click="() => loadMore(pageNumber--)" :disabled="pageNumber <= 1">
-						<svg
-							clip-rule="evenodd"
-							fill-rule="evenodd"
-							stroke-linejoin="round"
-							stroke-miterlimit="2"
-							viewBox="0 0 24 24"
-							xmlns="http://www.w3.org/2000/svg"
-							title="Previous page"
-							aria-label="Videos on the previous page"
-							aria-controls="videos pageCount"
-						>
-							<path
-								d="m13.789 7.155c.141-.108.3-.157.456-.157.389 0 .755.306.755.749v8.501c0 .445-.367.75-.755.75-.157 0-.316-.05-.457-.159-1.554-1.203-4.199-3.252-5.498-4.258-.184-.142-.29-.36-.29-.592 0-.23.107-.449.291-.591 1.299-1.002 3.945-3.044 5.498-4.243z"
-							/>
-						</svg>
-					</button>
-					<button
-						@click="() => loadMore(pageNumber++)"
-						:disabled="pageNumber >= data.pages"
-						title="Previous page"
-						aria-label="Videos on the next page"
-						aria-controls="videos pageCount"
-					>
-						<svg
-							clip-rule="evenodd"
-							fill-rule="evenodd"
-							stroke-linejoin="round"
-							stroke-miterlimit="2"
-							viewBox="0 0 24 24"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="m10.211 7.155c-.141-.108-.3-.157-.456-.157-.389 0-.755.306-.755.749v8.501c0 .445.367.75.755.75.157 0 .316-.05.457-.159 1.554-1.203 4.199-3.252 5.498-4.258.184-.142.29-.36.29-.592 0-.23-.107-.449-.291-.591-1.299-1.002-3.945-3.044-5.498-4.243z"
-							/>
-						</svg>
-					</button>
-				</div>
+				<PageNumber :max="data.pages" />
 			</template>
 		</header>
 
 		<div
-			v-if="!pending && Array.isArray(data.videos) && data.videos.length"
+			v-if="!pending && data && Array.isArray(data.videos) && data.videos.length"
 			id="videos"
 			aria-live="polite"
 		>
@@ -144,5 +112,7 @@ const loadMore = value => {
 				</figure>
 			</a>
 		</div>
+
+		<PageNumber v-if="data && data.total" :max="data.pages" class="mb-10" />
 	</div>
 </template>

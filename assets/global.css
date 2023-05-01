@@ -71,9 +71,13 @@ img {
 header {
   max-width: 600px;
   padding: 3rem 2rem;
+  text-align: center;
+}
+
+header,
+.pageButtons {
   margin-left: auto;
   margin-right: auto;
-  text-align: center;
 }
 
 h1 {
@@ -95,7 +99,11 @@ figcaption,
   font-size: 1.1rem;
 }
 
-#pageButtons button {
+.pageButtons {
+  width: 96px
+}
+
+.pageButtons button {
   background-color: transparent;
   border: none;
   height: 48px;
@@ -103,12 +111,12 @@ figcaption,
   width: 48px;
 }
 
-#pageButtons button:not(:disabled):hover {
+.pageButtons button:not(:disabled):hover {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-#pageButtons button:disabled {
+.pageButtons button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
